@@ -31,4 +31,19 @@ attr_accessor :name, :bounty_value, :last_known_location, :favourite_weapon
     @id = db.exec_prepared("save", values)[0]["id"].to_i
     db.close()
   end
+
+  def delete()
+    db = PG.connect({
+      dbname: "bounty_tracking",
+      host: "localhost"
+      })
+    sql = "DELETE FROM bounties
+    WHERE id = $1"
+    db.prepare("delete", sql)
+    db.exec_prepared("delete", [@id])
+    db.close()
+  end
+
+
+  ###
 end
