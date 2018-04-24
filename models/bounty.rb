@@ -11,4 +11,24 @@ attr_accessor :name, :bounty_value, :last_known_location, :favourite_weapon
     @last_known_location = options["last_known_location"]
     @favourite_weapon = options["favourite_weapon"]
   end
+
+#instance variable methods
+
+  def save()
+    db = PG.connect({
+      dbname: "bounty_tracking",
+      host: "localhost"
+      })
+    sql = "INSERT INTO bounties
+      (name,
+      bounty_value,
+      last_known_location,
+      favourite_weapon)
+      VALUES
+      ($1, $2, $3, $4) RETURNING id"
+    values = [@name, @bounty_value, @last_known_location, @favourite_weapon]
+    db.prepare("save", sql)
+    @id = db.exec_prepared("save", values)[0]["id"].to_i
+    db.close()
+  end
 end
